@@ -167,17 +167,10 @@ end
 
 -- checks if the x, y pixel position is blocked by a wall
 function pixel_is_blocked(x, y)
-   if not is_legal_pixel(x, y) then
-      return false
-   end
-   cellx = flr(x / 8)
-   celly = flr(y / 8)
-   sprite = mget(cellx, celly)
-   return fget(sprite, tile_info.wall_tile)
-end
-
-function is_legal_pixel(x, y)
-  return not (x < 0 or y < 0 or x > 127 or y > 127)
+  cellx = flr(x / 8)
+  celly = flr(y / 8)
+  sprite = mget(cellx, celly)
+  return fget(sprite, tile_info.wall_tile)
 end
 
 function update_cam()
@@ -198,7 +191,7 @@ function cam_transition_start()
     elseif player.x >= cam.x + 128 then
       cam.moving = true
       cam.dir = c_dir_right
-    elseif player.y < cam.y then
+    elseif player.y < cam.y + 8 then
       cam.moving = true
       cam.dir = c_dir_up
     elseif player.y >= cam.y + 128 then
@@ -227,7 +220,7 @@ function cam_transition_stop()
 end
 
 function cam_at_grid_point()
-  return cam.x % 128 == 0 and cam.y % 128== 0
+  return cam.x % 128 == 0 and cam.y % 120== 0
 end
 -->8
 -- draw functions --
@@ -261,13 +254,13 @@ function draw_player()
 end
 
 function draw_menu()
-  rectfill(0, 0, 128, 9, 0)
-  spr(spr_scissors, 0, 1)
-  print(tostr(player.scissors), 10, 2, 7)
-  spr(spr_stones, 16, 1)
-  print(tostr(player.stones), 26, 2, 7)
-  spr(spr_paper, 31, 1)
-  print(tostr(player.papers), 41, 2, 7)
+  rectfill(cam.x, cam.y, cam.x + 128, cam.y + 9, 0)
+  spr(spr_scissors, cam.x + 0, cam.y + 1)
+  print(tostr(player.scissors), cam.x + 10, cam.y + 2, 7)
+  spr(spr_stones, cam.x + 16, cam.y + 1)
+  print(tostr(player.stones), cam.x + 26, cam.y + 2, 7)
+  spr(spr_paper, cam.x + 31, cam.y + 1)
+  print(tostr(player.papers), cam.x + 41, cam.y + 2, 7)
 end
 
 function draw_items()
