@@ -147,9 +147,9 @@ end
 
 function update_game()
   if btnp(0) or btnp(1) or btnp(2) or btnp(3) or btnp(4) or btnp(5) then
-    update_player()
     update_world()
     check_if_on_item()
+    update_player()
   end
   update_cam()
 end
