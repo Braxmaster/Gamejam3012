@@ -44,7 +44,10 @@ state = c_state_menu
 player = {
   x = 64,
   y = 64,
-  dir = c_dir_left
+  dir = c_dir_left,
+  scissors = 0,
+  stones = 0,
+  papers = 0
 }
 enemy = {x = 32, y = 32, type = rock_type, spr = 003}
 enemies = {enemy}
@@ -137,12 +140,17 @@ end
 function draw_game()
   print("now in game", 20, 20)
   draw_player()
+  draw_menu()
   spr(enemy.spr, enemy.x, enemy.y)
 end
 
 function draw_player()
   local spr_data = c_player_sprs[player.dir]
   spr(spr_data.spr, player.x, player.y, 1, 1, spr_data.mirror)
+end
+
+function draw_menu()
+  
 end
 __gfx__
 00000000099990000999999008880000066666600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
