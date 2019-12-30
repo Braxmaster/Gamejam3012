@@ -16,6 +16,8 @@ __lua__
 c_state_menu=0
 c_state_game=1
 
+c_music_game=00
+
 tile_info = {free_tile = 0,
              wall_tile = 1
 }
@@ -68,8 +70,13 @@ end
 
 function update_menu()
  if btn(4) then
-   state = c_state_game
+   init_game()
  end
+end
+
+function init_game()
+  music(c_music_game)
+  state = c_state_game
 end
 
 -- checks if the x, y pixel position is blocked by a wall
