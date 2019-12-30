@@ -269,15 +269,6 @@ function draw_player()
 end
 
 function draw_menu()
-<<<<<<< HEAD
-  rectfill(0, 0, 128, 9, 0)
-  spr(spr_rocks, 0, 1)
-  print(tostr(player.rocks), 10, 2, 7)
-  spr(spr_paper, 16, 1)
-  print(tostr(player.papers), 26, 2, 7)
-  spr(spr_scissors, 31, 1)
-  print(tostr(player.scissors), 41, 2, 7)
-=======
   rectfill(cam.x, cam.y, cam.x + 128, cam.y + 9, 0)
   spr(spr_scissors, cam.x + 0, cam.y + 1)
   print(tostr(player.scissors), cam.x + 10, cam.y + 2, 7)
@@ -285,7 +276,6 @@ function draw_menu()
   print(tostr(player.stones), cam.x + 26, cam.y + 2, 7)
   spr(spr_paper, cam.x + 31, cam.y + 1)
   print(tostr(player.papers), cam.x + 41, cam.y + 2, 7)
->>>>>>> 95d5374ef618decf67b6da45b0e84c4ef154eb57
 end
 
 function draw_items()
