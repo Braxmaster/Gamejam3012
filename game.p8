@@ -24,6 +24,8 @@ c_state_game = 1
 
 c_music_game = 00
 
+c_spr_enemy = 003
+
 -- indexes represent directions
 c_player_sprs = {
   {spr=019, mirror=true},
@@ -64,6 +66,8 @@ c_paper_type = 1
 c_scissor_type = 2
 
 
+c_types = {rock_type, sissor_type, paper_type}
+
 c_cam_speed = 8
 
 -- variables
@@ -77,8 +81,6 @@ player = {
   scissors = 0,
   current_weapon = c_rock_type
 }
-enemy = {x = 32, y = 32, type = rock_type, spr = 003}
-enemies = {enemy}
 
 -->8
 -- game logic functions --
@@ -92,10 +94,46 @@ function new_cam()
   }
 end
 
+-- todo: change numbers if map gets larger
+function random_legal_coords()
+  local map_width = 32
+  local map_height = 32
+  cellx = flr(rnd(map_width))
+  celly = flr(rnd(map_height))
+  while(cell_is_blocked(cellx, celly)) do
+    cellx = flr(rnd(map_width))
+    celly = flr(rnd(map_height))
+  end
+
+  return {
+    x = cellx * 8,
+    y = celly * 8
+  }
+end
+
+function random_type()
+  return c_types[flr(rnd(3))+1]
+end
+
+function new_enemy()
+  coords = random_legal_coords()
+  return {
+    x = coords.x,
+    y = coords.y,
+    type = random_type(),
+    spr = c_spr_enemy
+  }
+end
+
 function _init()
   state = c_state_menu
   current_game = c_game_0
   cam = new_cam()
+
+  enemies = {}
+  for i = 1, 5 do
+    add(enemies, new_enemy())
+  end
 end
 
 function _update()
@@ -192,6 +230,10 @@ end
 function pixel_is_blocked(x, y)
   cellx = flr(x / 8)
   celly = flr(y / 8)
+  return cell_is_blocked(cellx, celly)
+end
+
+function cell_is_blocked(cellx, celly)
   sprite = mget(cellx, celly)
   return fget(sprite, tile_info.wall_tile)
 end
@@ -277,10 +319,13 @@ function draw_game()
   camera(cam.x, cam.y)
   map(0, 0, 0, 0, 128, 128)
 
-  print("now in game", 20, 20)
   draw_player()
   draw_menu()
   draw_items()
+  foreach(enemies, draw_enemy)
+end
+
+function draw_enemy(enemy)
   spr(enemy.spr, enemy.x, enemy.y)
 end
 
