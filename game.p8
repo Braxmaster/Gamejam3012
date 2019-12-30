@@ -243,9 +243,9 @@ function cam_transition_stop()
 end
 
 function throw_projectile()
-  if player.current_weapon == 0 and player.stones > 0 then
+  if player.current_weapon == 0 and player.rocks > 0 then
     -- throw rock
-    player.stones -= 1
+    player.rocks -= 1
   elseif player.current_weapon == 1 and player.papers > 0 then
     -- throw paper
     player.papers -= 1
