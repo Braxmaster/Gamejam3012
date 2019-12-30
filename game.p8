@@ -150,7 +150,16 @@ function draw_player()
 end
 
 function draw_menu()
-  
+  local spr_scissors = 033
+  local spr_stones = 034
+  local spr_paper = 035
+  rectfill(0, 0, 128, 9, 0)
+  spr(spr_scissors, 0, 1)
+  print(tostr(player.scissors), 10, 2, 7)
+  spr(spr_stones, 16, 1)
+  print(tostr(player.stones), 26, 2, 7)
+  spr(spr_paper, 31, 1)
+  print(tostr(player.papers), 41, 2, 7)
 end
 __gfx__
 00000000099990000999999008880000066666600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
