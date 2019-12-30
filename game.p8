@@ -134,7 +134,7 @@ function update_player()
     throw_projectile()
   end
   if btn(5) then
-    player.current_weapon = (player.current_weapon + 1) % 2
+    player.current_weapon = (player.current_weapon + 1) % 3
   end
 end
 
@@ -290,13 +290,13 @@ function draw_player()
 end
 
 function draw_menu()
-  rectfill(0, 0, 128, 9, 0)
-  spr(spr_rocks, 0, 1)
-  print(tostr(player.rocks), 10, 2, 7)
-  spr(spr_paper, 16, 1)
-  print(tostr(player.papers), 26, 2, 7)
-  spr(spr_scissors, 31, 1)
-  print(tostr(player.scissors), 41, 2, 7)
+  rectfill(cam.x, cam.y, cam.x + 128, cam.y + 9, 0)
+  spr(spr_rocks, cam.x + 0, cam.y + 1)
+  print(tostr(player.rocks), cam.x + 10, cam.y + 2, 7)
+  spr(spr_paper, cam.x + 16, cam.y + 1)
+  print(tostr(player.papers), cam.x + 26, cam.y + 2, 7)
+  spr(spr_scissors, cam.x + 31, cam.y + 1)
+  print(tostr(player.scissors), cam.x + 41, cam.y + 2, 7)
 end
 
 function draw_items()
