@@ -16,9 +16,10 @@ __lua__
 c_state_menu=0
 c_state_game=1
 
--- grid constants
-c_grid_cell_size = 8
-c_grid_dim = 16
+tile_info = {
+ free_tile = 0
+ wall_tile = 1
+ }
 
 -- variables
 state = c_state_menu
