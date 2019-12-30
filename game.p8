@@ -13,12 +13,26 @@ __lua__
 -- constants and variables
 
 -- constants
-c_state_menu=0
-c_state_game=1
-c_music_game=00
+c_dir_left = 1
+c_dir_right = 2
+c_dir_up = 3
+c_dir_down = 4
+
+c_state_menu = 0
+c_state_game = 1
+
+c_music_game = 00
+
+-- indexes represent directions
+c_player_sprs = {
+  {spr=019, mirror=true},
+  {spr=019, mirror=false},
+  {spr=021, mirror=false},
+  {spr=017, mirror=false}
+}
 
 tile_info = {
- wall_tile = 0
+  wall_tile = 0
 }
 
  rock_type = 0
@@ -27,7 +41,11 @@ tile_info = {
 
 -- variables
 state = c_state_menu
-player = {x = 64, y = 64, spr = 001}
+player = {
+  x = 64,
+  y = 64,
+  dir = c_dir_left
+}
 enemy = {x = 32, y = 32, type = rock_type, spr = 003}
 enemies = {enemy}
 
@@ -59,15 +77,19 @@ end
 function update_player()
   if btn(0) then
     player.x -= 8
+    player.dir = c_dir_left
   end
   if btn(1) then
     player.x += 8
+    player.dir = c_dir_right
   end
   if btn(2) then
     player.y -= 8
+    player.dir = c_dir_up
   end
   if btn(3) then
     player.y += 8
+    player.dir = c_dir_down
   end
 end
 
@@ -108,10 +130,19 @@ function _draw()
   if state==c_state_menu then
     print("welcome to game", 10, 10)
   elseif state==c_state_game then
-    print("now in game", 20, 20)
-    spr(player.spr, player.x, player.y)
-    spr(enemy.spr, enemy.x, enemy.y)
+    draw_game()
   end
+end
+
+function draw_game()
+  print("now in game", 20, 20)
+  draw_player()
+  spr(enemy.spr, enemy.x, enemy.y)
+end
+
+function draw_player()
+  local spr_data = c_player_sprs[player.dir]
+  spr(spr_data.spr, player.x, player.y, 1, 1, spr_data.mirror)
 end
 __gfx__
 00000000099990000999999008880000066666600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -208,3 +239,4 @@ __music__
 00 07424344
 00 06094344
 02 08424344
+
