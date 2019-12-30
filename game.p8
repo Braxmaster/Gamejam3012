@@ -21,9 +21,16 @@ tile_info = {
  wall_tile = 1
  }
 
+ rock_type = 0
+ sissor_type = 1
+ paper_type = 2
+
 -- variables
 state = c_state_menu
 player = {x = 64, y = 64, spr = 001}
+enemy = {x = 8, y = 8, type = rock_type, spr = 003}
+enemies = {enemy}
+
 
 -->8
 -- game logic functions --
@@ -65,6 +72,12 @@ function update_player()
 end
 
 function update_world()
+  foreach{enemies, update_enemy}
+end
+
+function update_enemy(enemy) 
+  enemy.x += rnd(2) - 1
+  enemy.y += rnd(2) - 1
 end
 
 function update_menu()
@@ -83,6 +96,7 @@ function _draw()
   elseif state==c_state_game then
     print("now in game", 20, 20)
     spr(player.spr, player.x, player.y)
+    spr(enemy.spr, enemy.x, enemy.y)
   end
 end
 __gfx__
