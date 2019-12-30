@@ -18,6 +18,7 @@ c_state_game=1
 
 -- variables
 state = c_state_menu
+player = {x = 64, y = 64, spr = 001}
 
 -->8
 -- game logic functions --
@@ -36,6 +37,28 @@ function _update()
 end
 
 function update_game()
+  if btnp(0) or btnp(1) or btnp(2) or btnp(3) or btnp(4) or btnp(5) then
+    update_player()
+    update_world()
+  end
+end
+
+function update_player()
+  if btn(0) then
+    player.x -= 8
+  end
+  if btn(1) then
+    player.x += 8
+  end
+  if btn(2) then
+    player.y -= 8
+  end
+  if btn(3) then
+    player.y += 8
+  end
+end
+
+function update_world()
 end
 
 function update_menu()
@@ -52,6 +75,7 @@ function _draw()
     print("welcome to game", 10, 10)
   elseif state==c_state_game then
     print("now in game", 20, 20)
+    spr(player.spr, player.x, player.y)
   end
 end
 __gfx__
