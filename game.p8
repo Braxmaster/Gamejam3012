@@ -35,9 +35,10 @@ tile_info = {
   wall_tile = 0
 }
 
- rock_type = 0
- sissor_type = 1
- paper_type = 2
+c_rock_type = 0
+c_paper_type = 1
+c_scissor_type = 2
+
 
 -- variables
 state = c_state_menu
@@ -47,7 +48,8 @@ player = {
   dir = c_dir_left,
   scissors = 0,
   stones = 0,
-  papers = 0
+  papers = 0,
+  current_weapon = c_rock_type
 }
 enemy = {x = 32, y = 32, type = rock_type, spr = 003}
 enemies = {enemy}
@@ -94,6 +96,12 @@ function update_player()
     player.y += 8
     player.dir = c_dir_down
   end
+  if btn(4) then
+    throw_projectile()
+  end
+  if btn(5) then
+    player.current_weapon = (player.current_weapon + 1) % 2
+  end
 end
 
 function update_world()
@@ -127,6 +135,19 @@ function pixel_is_blocked(x, y)
    celly = flr(y / 16)
    sprite = mget(cellx, celly)
    return fget(sprite, tile_info.wall_tile)
+end
+
+function throw_projectile()
+  if player.current_weapon == 0 and player.stones > 0 then
+    -- throw rock
+    player.stones -= 1
+  elseif player.current_weapon == 1 and player.papers > 0 then
+    -- throw paper
+    player.papers -= 1
+  elseif player.current_weapon == 2 and player.scissors > 0 then
+    -- throw scissor
+    player.scissors -= 1
+  end
 end
 
 -->8
