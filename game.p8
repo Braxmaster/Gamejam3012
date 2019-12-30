@@ -57,16 +57,16 @@ function update_game()
 end
 
 function update_player()
-  if btn(0) then
+  if btn(0) and not pixel_is_blocked(player.x - 8, player.y) then
     player.x -= 8
   end
-  if btn(1) then
+  if btn(1) and not pixel_is_blocked(player.x + 8, player.y) then
     player.x += 8
   end
-  if btn(2) then
+  if btn(2) and not pixel_is_blocked(player.x, player.y - 8) then
     player.y -= 8
   end
-  if btn(3) then
+  if btn(3) and not pixel_is_blocked(player.x, player.y + 8) then
     player.y += 8
   end
 end
@@ -93,10 +93,17 @@ end
 
 -- checks if the x, y pixel position is blocked by a wall
 function pixel_is_blocked(x, y)
-   cellx = flr(x / 16)
-   celly = flr(y / 16)
+   if not is_legal_pixel(x, y) then
+      return false
+   end
+   cellx = flr(x / 8)
+   celly = flr(y / 8)
    sprite = mget(cellx, celly)
    return fget(sprite, tile_info.wall_tile)
+end
+
+function is_legal_pixel(x, y)
+  return not (x < 0 or y < 0 or x > 127 or y > 127)
 end
 
 -->8
@@ -107,6 +114,9 @@ function _draw()
   map(0, 0, 0)
   if state==c_state_menu then
     print("welcome to game", 10, 10)
+    if pixel_is_blocked(9, 9) then
+       print("collision is broken", 10, 20)
+    end
   elseif state==c_state_game then
     print("now in game", 20, 20)
     spr(player.spr, player.x, player.y)
