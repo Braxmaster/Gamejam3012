@@ -31,6 +31,19 @@ c_player_sprs = {
   {spr=017, mirror=false}
 }
 
+-- RPS sprites
+spr_scissors = 033
+spr_stones = 034
+spr_paper = 035
+
+items = {
+  {
+    name = "stone",
+    x = 16,
+    y = 16
+  }
+}
+
 tile_info = {
   wall_tile = 0
 }
@@ -74,6 +87,7 @@ function update_game()
   if btnp(0) or btnp(1) or btnp(2) or btnp(3) or btnp(4) or btnp(5) then
     update_player()
     update_world()
+    check_if_on_item()
   end
 end
 
@@ -93,6 +107,23 @@ function update_player()
   if btn(3) and not pixel_is_blocked(player.x, player.y + 8) then
     player.y += 8
     player.dir = c_dir_down
+  end
+end
+
+function check_if_on_item()
+  for i in all(items) do
+    if player.x == i.x and player.y == i.y then
+      if i.name == "stone" then
+        player.stones += 1
+      end
+      if i.name == "paper" then
+        player.paper += 1
+      end
+      if i.name == "scissors" then
+        player.scissors += 1
+      end
+      del(items, i)
+    end
   end
 end
 
@@ -156,6 +187,7 @@ function draw_game()
   print("now in game", 20, 20)
   draw_player()
   draw_menu()
+  draw_items()
   spr(enemy.spr, enemy.x, enemy.y)
 end
 
@@ -165,9 +197,6 @@ function draw_player()
 end
 
 function draw_menu()
-  local spr_scissors = 033
-  local spr_stones = 034
-  local spr_paper = 035
   rectfill(0, 0, 128, 9, 0)
   spr(spr_scissors, 0, 1)
   print(tostr(player.scissors), 10, 2, 7)
@@ -175,6 +204,20 @@ function draw_menu()
   print(tostr(player.stones), 26, 2, 7)
   spr(spr_paper, 31, 1)
   print(tostr(player.papers), 41, 2, 7)
+end
+
+function draw_items()
+  for i in all(items) do
+    if i.name == "stone" then
+      spr(spr_stones, i.x, i.y)
+    end
+    if i.name == "scissors" then
+      spr(spr_scissors, i.x, i.y)
+    end
+    if i.name == "paper" then
+      spr(spr_paper, i.x, i.y)
+    end
+  end
 end
 __gfx__
 00000000099990000999999008880000066666600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
