@@ -147,10 +147,18 @@ end
 function update_enemy(enemy)
   x_dist = player.x - enemy.x
   y_dist = player.y - enemy.y
+  tmp ={
+  x = enemy.x,
+  y = enemy.y
+  }
   if abs(x_dist) > abs(y_dist) then
-    if x_dist > 0 then enemy.x += 8 else enemy.x -= 8 end
+    if x_dist > 0 then tmp.x += 8 else tmp.x -= 8 end
   else
-    if y_dist > 0 then enemy.y += 8 else enemy.y -= 8 end
+    if y_dist > 0 then tmp.y += 8 else tmp.y -= 8 end
+  end
+  if not pixel_is_blocked(tmp.x, tmp.y) then
+     enemy.x = tmp.x
+     enemy.y = tmp.y
   end
 end
 
