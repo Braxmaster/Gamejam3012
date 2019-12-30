@@ -27,7 +27,7 @@ tile_info = {free_tile = 0,
 -- variables
 state = c_state_menu
 player = {x = 64, y = 64, spr = 001}
-enemy = {x = 8, y = 8, type = rock_type, spr = 003}
+enemy = {x = 32, y = 32, type = rock_type, spr = 003}
 enemies = {enemy}
 
 
@@ -71,12 +71,12 @@ function update_player()
 end
 
 function update_world()
-  foreach{enemies, update_enemy}
+  foreach(enemies, update_enemy)
 end
 
 function update_enemy(enemy) 
-  enemy.x += rnd(2) - 1
-  enemy.y += rnd(2) - 1
+  enemy.x += rnd(2)*8 - 8
+  enemy.y += rnd(2)*8 - 8
 end
 
 function update_menu()
