@@ -76,9 +76,14 @@ function update_world()
   foreach(enemies, update_enemy)
 end
 
-function update_enemy(enemy) 
-  enemy.x += rnd(2)*8 - 8
-  enemy.y += rnd(2)*8 - 8
+function update_enemy(enemy)
+  x_dist = player.x - enemy.x
+  y_dist = player.y - enemy.y
+  if abs(x_dist) > abs(y_dist) then
+    if x_dist > 0 then enemy.x += 8 else enemy.x -= 8 end
+  else
+    if y_dist > 0 then enemy.y += 8 else enemy.y -= 8 end
+  end
 end
 
 function update_menu()
