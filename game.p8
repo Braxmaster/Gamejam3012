@@ -34,14 +34,24 @@ c_player_sprs = {
 
 -- RPS sprites
 spr_scissors = 033
-spr_stones = 034
+spr_rocks = 034
 spr_paper = 035
 
 items = {
   {
-    name = "stone",
+    name = "rock",
     x = 16,
     y = 16
+  },
+  {
+    name = "paper",
+    x = 32,
+    y = 32
+  },
+  {
+    name = "scissor",
+    x = 40,
+    y = 40
   }
 }
 
@@ -62,7 +72,7 @@ player = {
   y = 64,
   dir = c_dir_left,
   scissors = 0,
-  stones = 0,
+  rocks = 0,
   papers = 0
 }
 enemy = {x = 32, y = 32, type = rock_type, spr = 003}
@@ -126,13 +136,13 @@ end
 function check_if_on_item()
   for i in all(items) do
     if player.x == i.x and player.y == i.y then
-      if i.name == "stone" then
-        player.stones += 1
+      if i.name == "rock" then
+        player.rocks += 1
       end
       if i.name == "paper" then
-        player.paper += 1
+        player.papers += 1
       end
-      if i.name == "scissors" then
+      if i.name == "scissor" then
         player.scissors += 1
       end
       del(items, i)
@@ -262,20 +272,20 @@ end
 
 function draw_menu()
   rectfill(0, 0, 128, 9, 0)
-  spr(spr_scissors, 0, 1)
-  print(tostr(player.scissors), 10, 2, 7)
-  spr(spr_stones, 16, 1)
-  print(tostr(player.stones), 26, 2, 7)
-  spr(spr_paper, 31, 1)
-  print(tostr(player.papers), 41, 2, 7)
+  spr(spr_rocks, 0, 1)
+  print(tostr(player.rocks), 10, 2, 7)
+  spr(spr_paper, 16, 1)
+  print(tostr(player.papers), 26, 2, 7)
+  spr(spr_scissors, 31, 1)
+  print(tostr(player.scissors), 41, 2, 7)
 end
 
 function draw_items()
   for i in all(items) do
-    if i.name == "stone" then
-      spr(spr_stones, i.x, i.y)
+    if i.name == "rock" then
+      spr(spr_rocks, i.x, i.y)
     end
-    if i.name == "scissors" then
+    if i.name == "scissor" then
       spr(spr_scissors, i.x, i.y)
     end
     if i.name == "paper" then
@@ -283,6 +293,7 @@ function draw_items()
     end
   end
 end
+
 __gfx__
 00000000099990000999999008880000066666600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000009999909999999088555500666666660000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
