@@ -105,19 +105,16 @@ function update_game()
 end
 
 function update_player()
-  if btn(0) and not pixel_is_blocked(player.x - 8, player.y) then
+  if btnp(0) and not pixel_is_blocked(player.x - 8, player.y) then
     player.x -= 8
     player.dir = c_dir_left
-  end
-  if btn(1) and not pixel_is_blocked(player.x + 8, player.y) then
+  elseif btnp(1) and not pixel_is_blocked(player.x + 8, player.y) then
     player.x += 8
     player.dir = c_dir_right
-  end
-  if btn(2) and not pixel_is_blocked(player.x, player.y - 8) then
+  elseif btnp(2) and not pixel_is_blocked(player.x, player.y - 8) then
     player.y -= 8
     player.dir = c_dir_up
-  end
-  if btn(3) and not pixel_is_blocked(player.x, player.y + 8) then
+  elseif btnp(3) and not pixel_is_blocked(player.x, player.y + 8) then
     player.y += 8
     player.dir = c_dir_down
   end
