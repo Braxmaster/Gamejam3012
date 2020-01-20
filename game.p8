@@ -22,6 +22,11 @@ c_dir_down = 4
 c_state_menu = 0
 c_state_game = 1
 
+c_game_state_free = 0
+c_game_state_walking = 1
+c_game_state_enemies = 2
+c_game_state_attacking = 3
+
 c_music_game = 00
 
 c_enemy_sprs = {
@@ -77,9 +82,12 @@ c_cam_speed = 8
 
 -- variables
 state = c_state_menu
+game_state = c_game_state_free
 player = {
   x = 64,
   y = 64,
+  next_x = 64,
+  next_y = 64,
   dir = c_dir_left,
   rocks = 0,
   papers = 0,
@@ -129,6 +137,8 @@ function new_enemy()
   return {
     x = coords.x,
     y = coords.y,
+    next_x = coords.x,
+    next_y = coords.y,
     type = random_type(),
     spr = random_enemy_spr()
   }
@@ -155,35 +165,58 @@ end
 
 
 function update_game()
-  if btnp(0) or btnp(1) or btnp(2) or btnp(3) or btnp(4) or btnp(5) then
-    update_world()
+  if (btnp(0) or btnp(1) or btnp(2) or btnp(3) or btnp(4) or btnp(5)) and game_state == c_game_state_free then
     update_player()
     check_if_on_item()
+  elseif game_state == c_game_state_walking then
+    move_player() 
+  elseif game_state == c_game_state_enemies then 
+    foreach(enemies, move_dude)
+    enemy =  enemies[1]
+    if enemy.next_x == enemy.x and enemy.next_y == enemy.y then
+      game_state = c_game_state_free
+    end
+  elseif game_state == c_game_state_attacking then
+    game_state = c_game_state_free -- temporary, change when adding attack animation
+    update_enemies()
   end
   update_cam()
 end
 
 function update_player()
   if btnp(0) and not pixel_is_blocked(player.x - 8, player.y) then
-    player.x -= 8
+    game_state = c_game_state_walking
+    player.next_x -= 8
     player.dir = c_dir_left
   elseif btnp(1) and not pixel_is_blocked(player.x + 8, player.y) then
-    player.x += 8
+    game_state = c_game_state_walking
+    player.next_x += 8
     player.dir = c_dir_right
   elseif btnp(2) and not pixel_is_blocked(player.x, player.y - 8) then
-    player.y -= 8
+    game_state = c_game_state_walking
+    player.next_y -= 8
     player.dir = c_dir_up
   elseif btnp(3) and not pixel_is_blocked(player.x, player.y + 8) then
-    player.y += 8
+    game_state = c_game_state_walking
+    player.next_y += 8
     player.dir = c_dir_down
-  end
-  if btn(4) then
+  elseif btn(4) then
+    game_state = c_game_state_attacking
     throw_projectile()
-  end
-  if btn(5) then
+  elseif btn(5) then
     player.current_weapon = (player.current_weapon + 1) % 3
   end
 end
+
+function move_player()
+  move_dude(player)
+  if player.next_x == player.x and player.next_y == player.y then
+    update_enemies()
+    game_state = c_game_state_enemies
+    update_enemies()
+  end
+end
+
 
 function check_if_on_item()
   for i in all(items) do
@@ -202,7 +235,7 @@ function check_if_on_item()
   end
 end
 
-function update_world()
+function update_enemies()
   foreach(enemies, update_enemy)
 end
 
@@ -219,8 +252,22 @@ function update_enemy(enemy)
     if y_dist > 0 then tmp.y += 8 else tmp.y -= 8 end
   end
   if not pixel_is_blocked(tmp.x, tmp.y) then
-     enemy.x = tmp.x
-     enemy.y = tmp.y
+     enemy.next_x = tmp.x
+     enemy.next_y = tmp.y
+  end
+end
+
+function move_dude(dude)
+  move_x = dude.next_x - dude.x
+  move_y = dude.next_y - dude.y
+  if move_x > 0 then
+    dude.x += 1
+  elseif move_x < 0 then
+    dude.x -= 1
+  elseif move_y > 0 then
+    dude.y += 1
+  elseif move_y < 0 then
+    dude.y -= 1
   end
 end
 
