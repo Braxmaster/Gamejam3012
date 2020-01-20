@@ -272,8 +272,7 @@ function update_game()
     move_player()
   elseif game_state == c_game_state_enemies then
     foreach(enemies, move_dude)
-    enemy =  enemies[#enemies]
-    if enemy.next_x == enemy.x and enemy.next_y == enemy.y then
+    if enemies_moved() then
       game_state = c_game_state_free
     end
   elseif game_state == c_game_state_attacking then
@@ -368,6 +367,23 @@ function move_dude(dude)
   elseif move_y < 0 then
     dude.y -= 2
   end
+end
+
+function enemies_moved()
+  for enemy in all(enemies) do
+    if not enemy_moved(enemy) then
+      return false
+    end
+  end
+  return true
+end
+  
+function enemy_moved(enemy)
+  isDone = false
+  if enemy.next_x == enemy.x and enemy.next_y == enemy.y then 
+    isDone = true
+  end
+  return isDone
 end
 
 function update_menu()
