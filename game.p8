@@ -40,8 +40,8 @@ c_player_sprs = {
 }
 
 -- RPS sprites
-spr_scissors = 033
-spr_rocks = 034
+spr_scissor = 033
+spr_rock = 034
 spr_paper = 035
 
 items = {
@@ -355,21 +355,21 @@ function draw_menu()
   if player.current_weapon == 2 then
     spr(spr_highlight, cam.x + 32, cam.y + 1)
   end
-  spr(spr_rocks, cam.x + 0, cam.y + 1)
+  spr(spr_rock, cam.x + 0, cam.y + 1)
   print(tostr(player.rocks), cam.x + 10, cam.y + 2, 7)
   spr(spr_paper, cam.x + 16, cam.y + 1)
   print(tostr(player.papers), cam.x + 26, cam.y + 2, 7)
-  spr(spr_scissors, cam.x + 31, cam.y + 1)
+  spr(spr_scissor, cam.x + 31, cam.y + 1)
   print(tostr(player.scissors), cam.x + 41, cam.y + 2, 7)
 end
 
 function draw_items()
   for i in all(items) do
     if i.name == "rock" then
-      spr(spr_rocks, i.x, i.y)
+      spr(spr_rock, i.x, i.y)
     end
     if i.name == "scissor" then
-      spr(spr_scissors, i.x, i.y)
+      spr(spr_scissor, i.x, i.y)
     end
     if i.name == "paper" then
       spr(spr_paper, i.x, i.y)
