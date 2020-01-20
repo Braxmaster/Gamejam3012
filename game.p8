@@ -342,15 +342,48 @@ end
 
 function throw_projectile()
   if player.current_weapon == 0 and player.rocks > 0 then
-    -- throw rock
+    hit = throw(player.current_weapon)
     player.rocks -= 1
   elseif player.current_weapon == 1 and player.papers > 0 then
-    -- throw paper
+    throw(player.current_weapon)
     player.papers -= 1
   elseif player.current_weapon == 2 and player.scissors > 0 then
-    -- throw scissor
+    throw(player.current_weapon)
     player.scissors -= 1
   end
+  
+end
+
+--finds a hit on an enemy or a wall.
+--TODO: refactor & add enemy hit detection
+function throw(item_num)
+ hit = 2
+ if player.dir == c_dir_right then
+  hit = player.x + 8
+  while not pixel_is_blocked(hit, player.y) do
+   hit += 8
+  end
+  return {x = hit, y = player.pos}
+ elseif player.dir == c_dir_left then
+  hit = player.x - 8
+  while not pixel_is_blocked(hit, player.y) do
+   hit -= 8
+  end
+  return {x = hit, y = player.pos}
+ elseif player.dir == c_dir_up then
+  hit = player.y - 8
+  while not pixel_is_blocked(player.x, hit) do
+   hit -= 8
+  end
+  return {x = player.x, y = hit}
+ else
+  hit = player.y + 8
+  while not pixel_is_blocked(player.x, hit) do
+   hit += 8
+  end
+  return {x = player.x, y = hit}
+ end
+ player.scissors = hit
 end
 
 function cam_at_grid_point()
