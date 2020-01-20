@@ -268,7 +268,7 @@ function update_game()
     move_player() 
   elseif game_state == c_game_state_enemies then 
     foreach(enemies, move_dude)
-    enemy =  enemies[1]
+    enemy =  enemies[#enemies]
     if enemy.next_x == enemy.x and enemy.next_y == enemy.y then
       game_state = c_game_state_free
     end
@@ -307,7 +307,6 @@ end
 function move_player()
   move_dude(player)
   if player.next_x == player.x and player.next_y == player.y then
-    update_enemies()
     game_state = c_game_state_enemies
     update_enemies()
   end
@@ -357,13 +356,13 @@ function move_dude(dude)
   move_x = dude.next_x - dude.x
   move_y = dude.next_y - dude.y
   if move_x > 0 then
-    dude.x += 1
+    dude.x += 2
   elseif move_x < 0 then
-    dude.x -= 1
+    dude.x -= 2
   elseif move_y > 0 then
-    dude.y += 1
+    dude.y += 2
   elseif move_y < 0 then
-    dude.y -= 1
+    dude.y -= 2
   end
 end
 
