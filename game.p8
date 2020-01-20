@@ -112,7 +112,7 @@ function first_generation()
 
   for x = 0, 127 do
     add(last_gen_walls, {})
-    for y = 0, 31 do
+    for y = 0, 63 do
       local has_wall = false
       if rnd(1) > 0.6 then
         mset(x, y, c_sprite_wall)
@@ -128,7 +128,7 @@ function contains_wall(x, y)
 end
 
 function within_map(x, y)
-  return 0 <= x and x <= 127 and 0 <= y and y <= 31
+  return 0 <= x and x <= 127 and 0 <= y and y <= 63
 end
 
 function wider_neighbors(x, y)
@@ -177,13 +177,13 @@ end
 
 function map_generation()
   for x = 0, 127 do
-    for y = 0, 31 do
+    for y = 0, 63 do
       generation(x, y)
     end
   end
 
   for x = 0, 127 do
-    for y = 0, 31 do
+    for y = 0, 63 do
       last_gen_walls[x + 1][y + 1] = contains_wall(x, y)
     end
   end
@@ -191,8 +191,8 @@ end
 
 function new_cam()
   return {
-    x = 0,
-    y = 0,
+    x = 4,
+    y = 4,
     moving = false,
     dir = c_dir_none
   }
@@ -269,8 +269,8 @@ function update_game()
     update_player()
     check_if_on_item()
   elseif game_state == c_game_state_walking then
-    move_player() 
-  elseif game_state == c_game_state_enemies then 
+    move_player()
+  elseif game_state == c_game_state_enemies then
     foreach(enemies, move_dude)
     enemy =  enemies[1]
     if enemy.next_x == enemy.x and enemy.next_y == enemy.y then
@@ -410,13 +410,13 @@ function cam_transition_start()
     if player.x < cam.x then
       cam.moving = true
       cam.dir = c_dir_left
-    elseif player.x >= cam.x + 128 then
+    elseif player.x >= cam.x + 124 then
       cam.moving = true
       cam.dir = c_dir_right
     elseif player.y < cam.y + 8 then
       cam.moving = true
       cam.dir = c_dir_up
-    elseif player.y >= cam.y + 128 then
+    elseif player.y >= cam.y + 124 then
       cam.moving = true
       cam.dir = c_dir_down
     end
@@ -452,7 +452,6 @@ function throw_projectile()
     throw(player.current_weapon)
     player.scissors -= 1
   end
-  
 end
 
 --finds a hit on an enemy or a wall.
@@ -488,7 +487,7 @@ function throw(item_num)
 end
 
 function cam_at_grid_point()
-  return cam.x % 128 == 0 and cam.y % 120== 0
+  return (cam.x - 4) % 120 == 0 and (cam.y - 4) % 112 == 0
 end
 -->8
 -- draw functions --
