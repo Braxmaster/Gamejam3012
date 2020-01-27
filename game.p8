@@ -518,6 +518,7 @@ end
 function init_game()
   music(c_music_game)
   state = c_state_game
+  hit = {x = 0, y = 0, was_enemy = false}
 end
 
 -- checks if the x, y pixel position is blocked by a wall
@@ -590,7 +591,7 @@ function throw_projectile()
     player.scissors -= 1
   end
   if hit.was_enemy then
-   kill_enemy_at_pos(hit.x, hit.y)
+    kill_enemy_at_pos(hit.x, hit.y)
   end
 end
 
