@@ -461,10 +461,10 @@ function throw_projectile()
     hit = throw(player.current_weapon)
     player.rocks -= 1
   elseif player.current_weapon == 1 and player.papers > 0 then
-    throw(player.current_weapon)
+    hit = throw(player.current_weapon)
     player.papers -= 1
   elseif player.current_weapon == 2 and player.scissors > 0 then
-    throw(player.current_weapon)
+    hit = throw(player.current_weapon)
     player.scissors -= 1
   end
 end
@@ -472,33 +472,42 @@ end
 --finds a hit on an enemy or a wall.
 --TODO: refactor & add enemy hit detection
 function throw(item_num)
- hit = 2
+ local hit = {x = player.x, y = player.y, hit_found = false, was_enemy = false}
  if player.dir == c_dir_right then
-  hit = player.x + 8
-  while not pixel_is_blocked(hit, player.y) do
-   hit += 8
+  hit.x = player.x + 8
+  while not find_hit(hit.x, hit.y).hit_found do
+   hit.x += 8
   end
-  return {x = hit, y = player.pos}
+  return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
  elseif player.dir == c_dir_left then
-  hit = player.x - 8
-  while not pixel_is_blocked(hit, player.y) do
-   hit -= 8
+  hit.x = player.x - 8
+  while not find_hit(hit.x, hit.y).hit_found do
+   hit.x -= 8
   end
-  return {x = hit, y = player.pos}
+  return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
  elseif player.dir == c_dir_up then
-  hit = player.y - 8
-  while not pixel_is_blocked(player.x, hit) do
-   hit -= 8
+  hit.y = player.y - 8
+  while not find_hit(hit.x, hit.y).hit_found do
+   hit.y -= 8
   end
-  return {x = player.x, y = hit}
+  return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
  else
-  hit = player.y + 8
-  while not pixel_is_blocked(player.x, hit) do
-   hit += 8
+  hit.y = player.y + 8
+  while not find_hit(hit.x, hit.y).hit_found do
+   hit.y += 8
   end
-  return {x = player.x, y = hit}
+  return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
  end
- player.scissors = hit
+end
+
+-- return struct {position x, position y, hit found, hit was enemy}
+-- TODO: Use recursion in else instead of while loop in throw
+function find_hit(x_, y_)
+ if pixel_is_blocked(x_, y_) then
+    return {x = x_, y = y_,  hit_found = true, was_enemy = false}
+ else
+    return {x = x_, y = y_,  hit_found = false, was_enemy = false}
+ end
 end
 
 function cam_at_grid_point()
