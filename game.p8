@@ -189,10 +189,130 @@ function map_generation()
   end
 end
 
+c_filler_no_group = -1
+
+function empty_map_groups()
+  local map_groups = {}
+
+  for x = 0, 127 do
+    add(map_groups, {})
+    for y = 0, 63 do
+      add(map_groups[x + 1], c_filler_no_group)
+    end
+  end
+
+  return map_groups
+end
+
+function traverse(visited, upcoming, x, y)
+  if within_map(x, y) and not contains_wall(x, y) and not visited[x+1][y+1] then
+    add(upcoming, {x = x, y = y})
+    visited[x+1][y+1] = true
+  end
+end
+
+function empty_visited()
+  local visited = {}
+
+  for x = 0, 127 do
+    add(visited, {})
+    for y = 0, 63 do
+      add(visited[x + 1], false)
+    end
+  end
+
+  return visited
+end
+
+function fill_group(current_group, map_groups, start_x, start_y)
+  local visited = empty_visited()
+  local upcoming = {{x = start_x, y = start_y}}
+  visited[start_x+1][start_y+1] = true
+
+  while(#upcoming > 0) do
+    local current = upcoming[1]
+    local x = current.x
+    local y = current.y
+    del(upcoming, current)
+
+    map_groups[x+1][y+1] = current_group
+
+    traverse(visited, upcoming, x + 1, y)
+    traverse(visited, upcoming, x - 1, y)
+    traverse(visited, upcoming, x, y + 1)
+    traverse(visited, upcoming, x, y - 1)
+  end
+end
+
+function fill_map_holes()
+  local map_groups = empty_map_groups()
+  local current_group = 1
+
+  for x = 0, 127 do
+    for y = 0, 63 do
+      if not contains_wall(x, y) and map_groups[x+1][y+1] == c_filler_no_group then
+        fill_group(current_group, map_groups, x, y)
+        current_group += 1
+      end
+    end
+  end
+
+  local group_counts = {}
+  for group = 1, current_group do
+    group_counts[group] = 0
+  end
+
+  for x = 0, 127 do
+    for y = 0, 63 do
+      if not contains_wall(x, y) then
+        local map_group = map_groups[x+1][y+1]
+        group_counts[map_group] += 1
+      end
+    end
+  end
+
+  local largest_group = -1
+  local largest_group_size = -1
+
+  for group = 1, current_group do
+    if group_counts[group] > largest_group_size then
+      largest_group = group
+      largest_group_size = group_counts[group]
+    end
+  end
+
+  for x = 0, 127 do
+    for y = 0, 63 do
+      if not contains_wall(x, y) and map_groups[x+1][y+1] != largest_group then
+        mset(x, y, c_sprite_wall)
+      end
+    end
+  end
+end
+
+function add_outer_walls()
+  for x = 0, 127 do
+    local y = 0
+    mset(x, y, c_sprite_wall)
+  end
+  for x = 0, 127 do
+    local y = 63
+    mset(x, y, c_sprite_wall)
+  end
+  for y = 0, 63 do
+    local x = 0
+    mset(x, y, c_sprite_wall)
+  end
+  for y = 0, 63 do
+    local x = 127
+    mset(x, y, c_sprite_wall)
+  end
+end
+
 function new_cam()
   return {
     x = 4,
-    y = 4,
+    y = -12,
     moving = false,
     dir = c_dir_none
   }
@@ -260,8 +380,10 @@ function update_generate()
   gen += 1
   map_generation()
   if gen == 5 then
-   init_game()
- end
+    fill_map_holes()
+    add_outer_walls()
+    init_game()
+  end
 end
 
 function update_game()
@@ -406,7 +528,7 @@ function pixel_is_blocked(x, y)
 end
 
 function cell_is_blocked(cellx, celly)
-  sprite = mget(cellx, celly)
+  local sprite = mget(cellx, celly)
   return fget(sprite, tile_info.wall_tile)
 end
 
@@ -537,7 +659,7 @@ function kill_enemy_at_pos(x, y)
 end
 
 function cam_at_grid_point()
-  return (cam.x - 4) % 120 == 0 and (cam.y - 4) % 112 == 0
+  return (cam.x - 4) % 120 == 0 and (cam.y + 12) % 112 == 0
 end
 -->8
 -- draw functions --
