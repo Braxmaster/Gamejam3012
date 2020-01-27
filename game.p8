@@ -478,24 +478,28 @@ function throw(item_num)
   while not find_hit(hit.x, hit.y).hit_found do
    hit.x += 8
   end
+  hit = find_hit(hit.x, hit.y) -- WHile lopp is stupid, will look better when recursion is done
   return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
  elseif player.dir == c_dir_left then
   hit.x = player.x - 8
   while not find_hit(hit.x, hit.y).hit_found do
    hit.x -= 8
   end
+  hit = find_hit(hit.x, hit.y)
   return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
  elseif player.dir == c_dir_up then
   hit.y = player.y - 8
   while not find_hit(hit.x, hit.y).hit_found do
    hit.y -= 8
   end
+  hit = find_hit(hit.x, hit.y)
   return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
  else
   hit.y = player.y + 8
   while not find_hit(hit.x, hit.y).hit_found do
    hit.y += 8
   end
+  hit = find_hit(hit.x, hit.y)
   return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
  end
 end
@@ -503,11 +507,22 @@ end
 -- return struct {position x, position y, hit found, hit was enemy}
 -- TODO: Use recursion in else instead of while loop in throw
 function find_hit(x_, y_)
- if pixel_is_blocked(x_, y_) then
-    return {x = x_, y = y_,  hit_found = true, was_enemy = false}
+ if enemy_at_position(x_, y_) then
+    return {x = x_, y = y_,  hit_found = true, was_enemy = true}
+ elseif pixel_is_blocked(x_, y_) then
+  return {x = x_, y = y_,  hit_found = true, was_enemy = false}
  else
     return {x = x_, y = y_,  hit_found = false, was_enemy = false}
  end
+end
+
+function enemy_at_position(x, y)
+ for enemy in all(enemies) do
+    if enemy.x == x and enemy.y == y then
+     return true
+    end
+ end
+ return false
 end
 
 function cam_at_grid_point()
