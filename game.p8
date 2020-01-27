@@ -467,6 +467,9 @@ function throw_projectile()
     hit = throw(player.current_weapon)
     player.scissors -= 1
   end
+  if hit.was_enemy then
+   kill_enemy_at_pos(hit.x, hit.y)
+  end
 end
 
 --finds a hit on an enemy or a wall.
@@ -523,6 +526,14 @@ function enemy_at_position(x, y)
     end
  end
  return false
+end
+
+function kill_enemy_at_pos(x, y)
+ for enemy in all(enemies) do
+    if enemy.x == x and enemy.y == y then
+     del(enemies, enemy)
+    end
+ end
 end
 
 function cam_at_grid_point()
