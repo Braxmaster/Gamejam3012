@@ -92,7 +92,7 @@ function first_generation()
 
   last_gen_walls = {}
 
-  for x = 0, 127 do
+  for x = 0, 121 do
     add(last_gen_walls, {})
     for y = 0, 55 do
       local has_wall = false
@@ -110,7 +110,7 @@ function contains_wall(x, y)
 end
 
 function within_map(x, y)
-  return 0 <= x and x <= 127 and 0 <= y and y <= 55
+  return 0 <= x and x <= 121 and 0 <= y and y <= 55
 end
 
 function wider_neighbors(x, y)
@@ -168,7 +168,7 @@ c_filler_no_group = -1
 function empty_map_groups()
   local map_groups = {}
 
-  for x = 0, 127 do
+  for x = 0, 121 do
     add(map_groups, {})
     for y = 0, 55 do
       add(map_groups[x + 1], c_filler_no_group)
@@ -188,7 +188,7 @@ end
 function empty_visited()
   local visited = {}
 
-  for x = 0, 127 do
+  for x = 0, 121 do
     add(visited, {})
     for y = 0, 55 do
       add(visited[x + 1], false)
@@ -222,7 +222,7 @@ function fill_map_holes()
   local map_groups = empty_map_groups()
   local current_group = 1
 
-  for x = 0, 127 do
+  for x = 0, 121 do
     for y = 0, 55 do
       if not contains_wall(x, y) and map_groups[x+1][y+1] == c_filler_no_group then
         fill_group(current_group, map_groups, x, y)
@@ -236,7 +236,7 @@ function fill_map_holes()
     group_counts[group] = 0
   end
 
-  for x = 0, 127 do
+  for x = 0, 121 do
     for y = 0, 55 do
       if not contains_wall(x, y) then
         local map_group = map_groups[x+1][y+1]
@@ -255,7 +255,7 @@ function fill_map_holes()
     end
   end
 
-  for x = 0, 127 do
+  for x = 0, 121 do
     for y = 0, 55 do
       if not contains_wall(x, y) and map_groups[x+1][y+1] != largest_group then
         mset(x, y, c_sprite_wall)
@@ -265,11 +265,11 @@ function fill_map_holes()
 end
 
 function add_outer_walls()
-  for x = 0, 127 do
+  for x = 0, 121 do
     local y = 0
     mset(x, y, c_sprite_wall)
   end
-  for x = 0, 127 do
+  for x = 0, 121 do
     local y = 55
     mset(x, y, c_sprite_wall)
   end
@@ -278,7 +278,7 @@ function add_outer_walls()
     mset(x, y, c_sprite_wall)
   end
   for y = 0, 55 do
-    local x = 127
+    local x = 121
     mset(x, y, c_sprite_wall)
   end
 end
@@ -329,7 +329,7 @@ function set_wall_sprite(x, y)
 end
 
 function set_map_sprites()
-  for x = 0, 127 do
+  for x = 0, 121 do
     for y = 0, 55 do
       if cell_is_blocked(x, y) then
         set_wall_sprite(x, y)
@@ -414,11 +414,11 @@ end
 
 function update_generate()
   if gen < 6 then
-    if gen_x > 127 then
+    if gen_x > 121 then
       gen_x = 0
       gen += 1
 
-      for x = 0, 127 do
+      for x = 0, 121 do
         for y = 0, 55 do
           last_gen_walls[x + 1][y + 1] = contains_wall(x, y)
         end
@@ -627,25 +627,25 @@ function random_map_color()
 end
 
 function draw_whole_map()
-  for x = 0, 127 do
+  for x = 0, 121 do
     for y = 0, 55 do
       if mget(x, y) == c_sprite_wall then
-        pset(x, y+9, random_map_color())
+        pset(x+3, y+9, random_map_color())
       end
     end
   end
 
-  for x = 0, 127 do
-    pset(x, 0+9, random_map_color())
+  for x = 0, 121 do
+    pset(x+3, 0+9, random_map_color())
   end
-  for x = 0, 127 do
-    pset(x, 55+9, random_map_color())
-  end
-  for y = 0, 55 do
-    pset(0, y+9, random_map_color())
+  for x = 0, 121 do
+    pset(x+3, 55+9, random_map_color())
   end
   for y = 0, 55 do
-    pset(127, y+9, random_map_color())
+    pset(0+3, y+9, random_map_color())
+  end
+  for y = 0, 55 do
+    pset(121+3, y+9, random_map_color())
   end
 end
 
