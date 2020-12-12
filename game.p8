@@ -575,10 +575,10 @@ function enemies_moved()
   end
   return true
 end
-  
+
 function enemy_moved(enemy)
   isDone = false
-  if enemy.next_x == enemy.x and enemy.next_y == enemy.y then 
+  if enemy.next_x == enemy.x and enemy.next_y == enemy.y then
     isDone = true
   end
   return isDone
