@@ -88,6 +88,7 @@ enemies = {}
 
 function first_generation()
   gen = 0
+  gen_x = 0
 
   last_gen_walls = {}
 
@@ -157,16 +158,8 @@ function generation(x, y)
 end
 
 function map_generation()
-  for x = 0, 127 do
-    for y = 0, 55 do
-      generation(x, y)
-    end
-  end
-
-  for x = 0, 127 do
-    for y = 0, 55 do
-      last_gen_walls[x + 1][y + 1] = contains_wall(x, y)
-    end
+  for y = 0, 55 do
+    generation(gen_x, y)
   end
 end
 
@@ -390,7 +383,6 @@ end
 
 function _init()
   state = c_state_menu
-  current_game = c_game_0
   cam = new_cam()
 end
 
@@ -421,8 +413,24 @@ function update_generate_done()
 end
 
 function update_generate()
-  gen += 1
-  map_generation()
+  if gen < 6 then
+    if gen_x > 127 then
+      gen_x = 0
+      gen += 1
+
+      for x = 0, 127 do
+        for y = 0, 55 do
+          last_gen_walls[x + 1][y + 1] = contains_wall(x, y)
+        end
+      end
+    end
+
+    map_generation()
+    gen_x += 1
+    map_generation()
+    gen_x += 1
+  end
+
   if gen == 5 then
     fill_map_holes()
     add_outer_walls()
@@ -625,6 +633,19 @@ function draw_whole_map()
         pset(x, y+9, random_map_color())
       end
     end
+  end
+
+  for x = 0, 127 do
+    pset(x, 0+9, random_map_color())
+  end
+  for x = 0, 127 do
+    pset(x, 55+9, random_map_color())
+  end
+  for y = 0, 55 do
+    pset(0, y+9, random_map_color())
+  end
+  for y = 0, 55 do
+    pset(127, y+9, random_map_color())
   end
 end
 
