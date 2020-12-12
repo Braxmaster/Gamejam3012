@@ -2,13 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 18
 __lua__
 -- cool game --
--- by fabian, jens, branne --
---    and jacob --
-
--- "why then the world's mine
---  oyster,
---  which i with sword will
---  open."
+-- by fabian (mostly) --
 
 -- constants and variables
 
@@ -25,8 +19,6 @@ c_state_generate = 2
 
 c_game_state_free = 0
 c_game_state_walking = 1
-c_game_state_enemies = 2
-c_game_state_attacking = 3
 
 c_music_game = 00
 
@@ -45,41 +37,9 @@ c_player_sprs = {
   {spr=017, mirror=false}
 }
 
--- RPS sprites
-spr_scissor = 033
-spr_rock = 034
-spr_paper = 035
-spr_beam_hor = 051
-spr_beam_vert = 052
-
-items = {
-  {
-    name = "rock",
-    x = 16,
-    y = 16
-  },
-  {
-    name = "paper",
-    x = 32,
-    y = 32
-  },
-  {
-    name = "scissor",
-    x = 40,
-    y = 40
-  }
-}
-
 tile_info = {
   wall_tile = 0
 }
-
-c_rock_type = 0
-c_paper_type = 1
-c_scissor_type = 2
-
-
-c_types = {rock_type, sissor_type, paper_type}
 
 c_cam_speed = 8
 
@@ -112,10 +72,6 @@ player = {
   next_x = 64,
   next_y = 64,
   dir = c_dir_left,
-  rocks = 0,
-  papers = 0,
-  scissors = 0,
-  current_weapon = c_rock_type
 }
 
 movement_factor = 0
@@ -410,14 +366,6 @@ function random_legal_coords()
   }
 end
 
-function random_type()
-  return c_types[flr(rnd(#c_types))+1]
-end
-
-function random_enemy_spr()
-  return c_enemy_sprs[flr(rnd(#c_enemy_sprs))+1]
-end
-
 function new_enemy()
   coords = random_legal_coords()
   return {
@@ -425,8 +373,8 @@ function new_enemy()
     y = coords.y,
     next_x = coords.x,
     next_y = coords.y,
-    type = random_type(),
-    spr = random_enemy_spr()
+    type = 0, -- TODO
+    spr = 0 -- TODO
   }
 end
 
@@ -436,12 +384,12 @@ function _init()
   cam = new_cam()
 
   enemies = {}
-  for i = 1, 5 do
-    add(enemies, new_enemy())
-  end
+  --for i = 1, 5 do
+  --  add(enemies, new_enemy())
+  --end
 end
 
-function _update()
+function _update60()
   if state==c_state_game then
     update_game()
   elseif state==c_state_menu then
@@ -463,93 +411,39 @@ function update_generate()
 end
 
 function update_game()
-  if (btnp(0) or btnp(1) or btnp(2) or btnp(3) or btnp(4) or btnp(5)) and game_state == c_game_state_free then
+  if (btnp(0) or btnp(1) or btnp(2) or btnp(3) or btnp(4) or btnp(5))
+      and game_state == c_game_state_free then
     update_player()
-    check_if_on_item()
   elseif game_state == c_game_state_walking then
     move_player()
-  elseif game_state == c_game_state_enemies then
-    foreach(enemies, move_dude)
-    if enemies_moved() then
-      game_state = c_game_state_free
-    end
-  elseif game_state == c_game_state_attacking then
-    game_state = c_game_state_free -- temporary, change when adding attack animation
-    update_enemies()
   end
   update_cam()
 end
 
 function update_player()
-  if btnp(0) and not pixel_is_blocked(player.x - 8, player.y) then
+  if btn(0) and not pixel_is_blocked(player.x - 8, player.y) then
     game_state = c_game_state_walking
     player.next_x -= 8
     player.dir = c_dir_left
-  elseif btnp(1) and not pixel_is_blocked(player.x + 8, player.y) then
+  elseif btn(1) and not pixel_is_blocked(player.x + 8, player.y) then
     game_state = c_game_state_walking
     player.next_x += 8
     player.dir = c_dir_right
-  elseif btnp(2) and not pixel_is_blocked(player.x, player.y - 8) then
+  elseif btn(2) and not pixel_is_blocked(player.x, player.y - 8) then
     game_state = c_game_state_walking
     player.next_y -= 8
     player.dir = c_dir_up
-  elseif btnp(3) and not pixel_is_blocked(player.x, player.y + 8) then
+  elseif btn(3) and not pixel_is_blocked(player.x, player.y + 8) then
     game_state = c_game_state_walking
     player.next_y += 8
     player.dir = c_dir_down
-  elseif btn(4) then
-    game_state = c_game_state_attacking
-    throw_projectile()
-  elseif btn(5) then
-    player.current_weapon = (player.current_weapon + 1) % 3
   end
 end
 
 function move_player()
   move_dude(player)
   if player.next_x == player.x and player.next_y == player.y then
-    game_state = c_game_state_enemies
-    update_enemies()
-  end
-end
-
-
-function check_if_on_item()
-  for i in all(items) do
-    if player.x == i.x and player.y == i.y then
-      if i.name == "rock" then
-        player.rocks += 1
-      end
-      if i.name == "paper" then
-        player.papers += 1
-      end
-      if i.name == "scissor" then
-        player.scissors += 1
-      end
-      del(items, i)
-    end
-  end
-end
-
-function update_enemies()
-  foreach(enemies, update_enemy)
-end
-
-function update_enemy(enemy)
-  x_dist = player.x - enemy.x
-  y_dist = player.y - enemy.y
-  tmp ={
-  x = enemy.x,
-  y = enemy.y
-  }
-  if abs(x_dist) > abs(y_dist) then
-    if x_dist > 0 then tmp.x += 8 else tmp.x -= 8 end
-  else
-    if y_dist > 0 then tmp.y += 8 else tmp.y -= 8 end
-  end
-  if not pixel_is_blocked(tmp.x, tmp.y) then
-     enemy.next_x = tmp.x
-     enemy.next_y = tmp.y
+    game_state = c_game_state_free
   end
 end
 
@@ -560,28 +454,12 @@ function move_dude(dude)
     dude.x += 2
   elseif move_x < 0 then
     dude.x -= 2
-  elseif move_y > 0 then
+  end
+  if move_y > 0 then
     dude.y += 2
   elseif move_y < 0 then
     dude.y -= 2
   end
-end
-
-function enemies_moved()
-  for enemy in all(enemies) do
-    if not enemy_moved(enemy) then
-      return false
-    end
-  end
-  return true
-end
-
-function enemy_moved(enemy)
-  isDone = false
-  if enemy.next_x == enemy.x and enemy.next_y == enemy.y then
-    isDone = true
-  end
-  return isDone
 end
 
 function update_menu()
@@ -594,13 +472,12 @@ end
 function init_game()
   --music(c_music_game)
   state = c_state_game
-  hit = {x = 0, y = 0, was_enemy = false}
 end
 
 -- checks if the x, y pixel position is blocked by a wall
 function pixel_is_blocked(x, y)
-  cellx = flr(x / 8)
-  celly = flr(y / 8)
+  local cellx = flr(x / 8)
+  local celly = flr(y / 8)
   return cell_is_blocked(cellx, celly)
 end
 
@@ -655,86 +532,6 @@ function cam_transition_stop()
   end
 end
 
-function throw_projectile()
-  if player.current_weapon == 0 and player.rocks > 0 then
-    hit = throw(player.current_weapon)
-    player.rocks -= 1
-  elseif player.current_weapon == 1 and player.papers > 0 then
-    hit = throw(player.current_weapon)
-    player.papers -= 1
-  elseif player.current_weapon == 2 and player.scissors > 0 then
-    hit = throw(player.current_weapon)
-    player.scissors -= 1
-  end
-  if hit.was_enemy then
-    kill_enemy_at_pos(hit.x, hit.y)
-  end
-end
-
---finds a hit on an enemy or a wall.
---TODO: refactor & add enemy hit detection
-function throw(item_num)
- local hit = {x = player.x, y = player.y, hit_found = false, was_enemy = false}
- if player.dir == c_dir_right then
-  hit.x = player.x + 8
-  while not find_hit(hit.x, hit.y).hit_found do
-   hit.x += 8
-  end
-  hit = find_hit(hit.x, hit.y) -- WHile lopp is stupid, will look better when recursion is done
-  return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
- elseif player.dir == c_dir_left then
-  hit.x = player.x - 8
-  while not find_hit(hit.x, hit.y).hit_found do
-   hit.x -= 8
-  end
-  hit = find_hit(hit.x, hit.y)
-  return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
- elseif player.dir == c_dir_up then
-  hit.y = player.y - 8
-  while not find_hit(hit.x, hit.y).hit_found do
-   hit.y -= 8
-  end
-  hit = find_hit(hit.x, hit.y)
-  return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
- else
-  hit.y = player.y + 8
-  while not find_hit(hit.x, hit.y).hit_found do
-   hit.y += 8
-  end
-  hit = find_hit(hit.x, hit.y)
-  return {x = hit.x, y = hit.y, was_enemy = hit.was_enemy}
- end
-end
-
--- return struct {position x, position y, hit found, hit was enemy}
--- TODO: Use recursion in else instead of while loop in throw
-function find_hit(x_, y_)
- if enemy_at_position(x_, y_) then
-    return {x = x_, y = y_,  hit_found = true, was_enemy = true}
- elseif pixel_is_blocked(x_, y_) then
-  return {x = x_, y = y_,  hit_found = true, was_enemy = false}
- else
-    return {x = x_, y = y_,  hit_found = false, was_enemy = false}
- end
-end
-
-function enemy_at_position(x, y)
- for enemy in all(enemies) do
-    if enemy.x == x and enemy.y == y then
-     return true
-    end
- end
- return false
-end
-
-function kill_enemy_at_pos(x, y)
- for enemy in all(enemies) do
-    if enemy.x == x and enemy.y == y then
-     del(enemies, enemy)
-    end
- end
-end
-
 function cam_at_grid_point()
   return (cam.x - 4) % 120 == 0 and (cam.y + 12) % 112 == 0
 end
@@ -745,9 +542,6 @@ function _draw()
   cls()
   if state==c_state_menu then
     print("welcome to game", 10, 10)
-    if pixel_is_blocked(9, 9) then
-       print("collision is broken", 10, 20)
-    end
   elseif state==c_state_game then
     draw_game()
   elseif state==c_state_generate then
@@ -760,16 +554,8 @@ function draw_game()
   map(0, 0, 0, 0, 128, 128)
 
   draw_player()
-  draw_menu()
-  draw_items()
+  draw_hud()
   foreach(enemies, draw_enemy)
-  if btn(4) then
-    draw_beam()
-  end
-end
-
-function draw_enemy(enemy)
-  spr(enemy.spr, enemy.x, enemy.y)
 end
 
 function draw_player()
@@ -777,80 +563,8 @@ function draw_player()
   spr(spr_data.spr, player.x, player.y, 1, 1, spr_data.mirror)
 end
 
-function draw_beam()
-local x = player.x
-local y = player.y
-
-if player.dir == 1 then
-      sspr(24, 24, movement_factor, 8, x-movement_factor, y)
-      x -= 8
-    elseif player.dir == 2 then
-      x += 8
-      sspr(31-movement_factor, 24, movement_factor, 8, x, y)
-    elseif player.dir == 3 then
-      sspr(32, 24, 8, movement_factor, x, y-movement_factor)
-      y -= 8
-    elseif player.dir == 4 then
-      y += 8
-      sspr(32, 31-movement_factor, 8, movement_factor, x, y)
-    end
-
-local times = 0
-
-  while times < 10 do
-    if player.dir == 1 then
-      sspr(24, 24, 8, 8, x - movement_factor, y)
-      x -= 8
-    elseif player.dir == 2 then
-      sspr(24, 24, 8, 8, x + movement_factor, y)
-      x += 8
-    elseif player.dir == 3 then
-      sspr(32, 24, 8, 8, x, y - movement_factor)
-      y -= 8
-    elseif player.dir == 4 then
-      sspr(32, 24, 8, 8, x, y + movement_factor)
-      y += 8
-    end
-  times += 1
-  end
-  movement_factor += 1
-  if movement_factor >= 8 then
-    movement_factor = 0
-  end
-end
-
-function draw_menu()
-  local spr_highlight = 005
+function draw_hud()
   rectfill(cam.x, cam.y, cam.x + 128, cam.y + 9, 0)
-  if player.current_weapon == 0 then
-    spr(spr_highlight, cam.x + 0, cam.y + 1)
-  end
-  if player.current_weapon == 1 then
-    spr(spr_highlight, cam.x + 16, cam.y + 1)
-  end
-  if player.current_weapon == 2 then
-    spr(spr_highlight, cam.x + 32, cam.y + 1)
-  end
-  spr(spr_rock, cam.x + 0, cam.y + 1)
-  print(tostr(player.rocks), cam.x + 10, cam.y + 2, 7)
-  spr(spr_paper, cam.x + 16, cam.y + 1)
-  print(tostr(player.papers), cam.x + 26, cam.y + 2, 7)
-  spr(spr_scissor, cam.x + 31, cam.y + 1)
-  print(tostr(player.scissors), cam.x + 41, cam.y + 2, 7)
-end
-
-function draw_items()
-  for i in all(items) do
-    if i.name == "rock" then
-      spr(spr_rock, i.x, i.y)
-    end
-    if i.name == "scissor" then
-      spr(spr_scissor, i.x, i.y)
-    end
-    if i.name == "paper" then
-      spr(spr_paper, i.x, i.y)
-    end
-  end
 end
 
 __gfx__
@@ -931,7 +645,7 @@ __sfx__
 01140000050700000000000000000507000000000000000007070070740000000000000000000000000000000c070000000000000000090700000000000000000507005074000000000000000000000000000000
 011400000507000000000000000005070000000000000000070700707400000000000000000000000000000002070000000000002070000000000005070050500504005030050200501500000000000000000000
 011400000507000000000000000005070000000000000000070700707400000000000000000000000000000002070000000000002070000000000000070000500004000030000200001500000000000000000000
-011400002112221132211422113221122211152112221135221222213222142221422214222132221222211528122281322612226132241222413221122211322113221132211322113221132211322112221115
+011400002112221132211422113221122211152112221135221222213222142221422214222132221222211528122281322612226132241222413221122211322113221132211322113221132211322112021115
 011400002414024144221402214421140211441f1401f1301f1201f115000000000000000000000000000000221402214421140211441f1401d144211402113021120211151f1401f1301f1201f1152112221135
 __music__
 00 01024344
