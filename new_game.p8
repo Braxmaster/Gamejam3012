@@ -94,6 +94,8 @@ player = {
     time = 0,
     x = 0,
     y = 0,
+    width = 8,
+    height = 8,
     sprs = c_sprites_sword_hori,
   }
 }
@@ -388,6 +390,8 @@ function new_skeltal()
   return {
     x = coords.x,
     y = coords.y,
+    width = 8,
+    height = 8,
     next_x = coords.x,
     next_y = coords.y,
     dir = c_dir_left,
@@ -506,6 +510,17 @@ function update_enemy(enemy)
   if enemy.type == c_enemy_skel_type then
     update_skeltal(enemy)
   end
+
+  if collision(player.sword, enemy) then
+    del(enemies, enemy)
+  end
+end
+
+function collision(actor_a, actor_b)
+  return actor_a.x < actor_b.x + actor_b.width and
+        actor_a.x + actor_a.width > actor_b.x and
+        actor_a.y < actor_b.y + actor_b.height and
+        actor_a.y + actor_a.height > actor_b.y
 end
 
 function update_skeltal(skeltal)
